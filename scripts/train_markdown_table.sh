@@ -8,7 +8,6 @@ export WANDB_ENTITY="Qianfan-VL"
 export WANDB_PROJECT="slime-dev"
 export WANDB_NAME="internvl-markdown-table-test1"
 export WANDB_MODE=offline
-export WANDB_API_KEY=285f5c49b9ab1d920af3d2e84df63461a74921ae
 export WANDB_BASE_URL=https://wandb.store
 export https_proxy=http://agent.baidu.com:8891
 export http_proxy=http://agent.baidu.com:8891
