@@ -2,6 +2,7 @@ import base64
 import io
 import logging
 import os
+import importlib.util
 
 import torch
 import torchvision.transforms as T
@@ -177,6 +178,10 @@ def load_image(image_input) -> Image.Image:
             return Image.open(BytesIO(response.content))
         elif os.path.exists(image_input):
             return Image.open(image_input)
+        elif image_input.startswith(("bos://", "bos:/")):
+            bos_client = _load_bos_client()
+            image_bytes = bos_client.get(image_input)
+            return Image.open(io.BytesIO(image_bytes))
         elif image_input.startswith("data:image"):
             # Base64 encoded image
             import base64
@@ -185,6 +190,17 @@ def load_image(image_input) -> Image.Image:
             image_data = base64.b64decode(data)
             return Image.open(io.BytesIO(image_data))
     raise ValueError(f"Cannot load image from: {type(image_input)}")
+
+
+def _load_bos_client():
+    """Load BOS client from the shared workspace helper."""
+    bos_client_path = "/mnt/cfs_bj_mt/workspace/zhengmingming/bos_client.py"
+    spec = importlib.util.spec_from_file_location("workspace_bos_client", bos_client_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Failed to load BOS client from {bos_client_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.BOSClient()
 
 
 def load_tokenizer(name_or_path: str, **kwargs):

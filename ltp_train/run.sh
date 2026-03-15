@@ -92,7 +92,7 @@ ROLLOUT_NUM_GPUS_PER_ENGINE=${ROLLOUT_NUM_GPUS_PER_ENGINE:-1}
 SGLANG_MEM_FRACTION_STATIC=${SGLANG_MEM_FRACTION_STATIC:-0.6}
 
 # Reward 配置
-CUSTOM_RM_PATH=${CUSTOM_RM_PATH:-"slime.rollout.rm_hub.kie_reward.kie_reward"}
+CUSTOM_RM_PATH=${CUSTOM_RM_PATH:-""}
 
 # WandB 配置
 USE_WANDB=${USE_WANDB:-"true"}
@@ -276,7 +276,10 @@ ROLLOUT_ARGS=(
 MULTIMODAL_ARGS='--multimodal-keys {"image":"images"}'
 
 # Reward 配置
-REWARD_ARGS="--custom-rm-path ${CUSTOM_RM_PATH}"
+REWARD_ARGS=()
+if [[ -n "${CUSTOM_RM_PATH}" ]]; then
+    REWARD_ARGS=("--custom-rm-path ${CUSTOM_RM_PATH}")
+fi
 
 # FSDP 训练后端配置
 FSDP_ARGS=(
@@ -378,7 +381,7 @@ ray job submit --address="http://127.0.0.1:8265" \
     ${CKPT_ARGS} \
     ${ROLLOUT_ARGS[@]} \
     ${MULTIMODAL_ARGS} \
-    ${REWARD_ARGS} \
+    ${REWARD_ARGS[@]} \
     ${FSDP_ARGS[@]} \
     ${GRPO_ARGS[@]} \
     ${OPTIMIZER_ARGS[@]} \
